@@ -62,7 +62,7 @@ public class UbiMqtt {
     private IMqttMessageListener messageListener = new IMqttMessageListener() {
         @Override
         public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-
+            System.out.println("MESSAGE HAS ARRIVED");
             ArrayList<Map.Entry<String, Subscription> > subscriptionsForTopic = getSubscriptionsForTopic(topic);
             System.out.println("MESSAGE HAPPENED");
             Iterator<Map.Entry<String, Subscription>> iterator = subscriptionsForTopic.iterator();
@@ -72,10 +72,13 @@ public class UbiMqtt {
 
                     if (next.getValue().getEcPublicKeys() != null) {
                         // This is a topic where signed messages are expected, try if the signature matches some of the public keys
+                        System.out.println("TRYING KEYS");
                         ECPublicKey[] tempKeys = next.getValue().getEcPublicKeys();
                         for (int i = 0; i < tempKeys.length; i++) {
+                            System.out.println(i);
                             if (messageValidator.validateMessage(mqttMessage.toString(), tempKeys[i])) {
                                 next.getValue().getListener().messageArrived(topic, mqttMessage, next.getKey());
+                                System.out.println("success");
                                 break;
                             }
                         }
