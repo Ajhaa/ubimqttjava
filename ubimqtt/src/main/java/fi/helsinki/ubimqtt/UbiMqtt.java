@@ -75,7 +75,8 @@ public class UbiMqtt {
                         System.out.println("TRYING KEYS");
                         ECPublicKey[] tempKeys = next.getValue().getEcPublicKeys();
                         for (int i = 0; i < tempKeys.length; i++) {
-                            System.out.println(i);
+                            System.out.println(i + " " + tempKeys[i] + " " + mqttMessage.toString());
+
                             if (messageValidator.validateMessage(mqttMessage.toString(), tempKeys[i])) {
                                 next.getValue().getListener().messageArrived(topic, mqttMessage, next.getKey());
                                 System.out.println("success");
