@@ -66,23 +66,25 @@ public class UbiMqtt {
             ArrayList<Map.Entry<String, Subscription> > subscriptionsForTopic = getSubscriptionsForTopic(topic);
 
             Iterator<Map.Entry<String, Subscription>> iterator = subscriptionsForTopic.iterator();
+            try {
+                while (iterator.hasNext()) {
+                    Map.Entry<String, Subscription> next = iterator.next();
 
-            while (iterator.hasNext()) {
-                Map.Entry<String, Subscription> next = iterator.next();
-
-                if (next.getValue().getEcPublicKeys() != null) {
-                    // This is a topic where signed messages are expected, try if the signature matches some of the public keys
-                    ECPublicKey[] tempKeys = next.getValue().getEcPublicKeys();
-                    for (int i=0; i< tempKeys.length; i++) {
-                        if (messageValidator.validateMessage(mqttMessage.toString(), tempKeys[i])) {
-                            next.getValue().getListener().messageArrived(topic, mqttMessage, next.getKey());
-                            break;
+                    if (next.getValue().getEcPublicKeys() != null) {
+                        // This is a topic where signed messages are expected, try if the signature matches some of the public keys
+                        ECPublicKey[] tempKeys = next.getValue().getEcPublicKeys();
+                        for (int i = 0; i < tempKeys.length; i++) {
+                            if (messageValidator.validateMessage(mqttMessage.toString(), tempKeys[i])) {
+                                next.getValue().getListener().messageArrived(topic, mqttMessage, next.getKey());
+                                break;
+                            }
                         }
+                    } else {
+                        next.getValue().getListener().messageArrived(topic, mqttMessage, next.getKey());
                     }
                 }
-                else {
-                    next.getValue().getListener().messageArrived(topic, mqttMessage, next.getKey());
-                }
+            } catch (Exception e) {
+                System.out.println("BUGHUNT " + e);
             }
         }
     };
