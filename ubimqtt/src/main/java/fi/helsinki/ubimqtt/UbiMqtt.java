@@ -64,7 +64,7 @@ public class UbiMqtt {
         public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
 
             ArrayList<Map.Entry<String, Subscription> > subscriptionsForTopic = getSubscriptionsForTopic(topic);
-
+            System.out.println("MESSAGE HAPPENED");
             Iterator<Map.Entry<String, Subscription>> iterator = subscriptionsForTopic.iterator();
             try {
                 while (iterator.hasNext()) {
@@ -98,6 +98,7 @@ public class UbiMqtt {
     }
 
     private void addSubscription(IUbiActionListener actionListener, String topic, String[] publicKeys, IUbiMessageListener listener) {
+        System.out.println("SUBSCRIBITION BEING ADDED");
         try {
             if (!subscriptions.containsKey(topic))
                 subscriptions.put(topic, Collections.synchronizedMap(new HashMap<String, Subscription>()));
@@ -107,8 +108,10 @@ public class UbiMqtt {
 
             subscriptions.get(topic).put(listenerId, new Subscription(topic, listener, publicKeys));
 
+            System.out.println("SUBRCIT SUCCESS");
             this.client.subscribe(topic, 1, null, actionListener, messageListener);
         } catch (Exception e) {
+            System.out.println("SUBRISIDJ FAILD");
             e.printStackTrace();
             actionListener.onFailure(null, e);
         }
