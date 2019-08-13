@@ -47,7 +47,7 @@ public class JwsHelper {
         ECPublicKey ecPublicKey = (ECPublicKey)converter.getPublicKey(pemPublicKey);
 
         pemParser.close();
-
+        System.out.println("ECPUBLICKEY: " + ecPublicKey);
         return ecPublicKey;
     }
 
@@ -66,6 +66,8 @@ public class JwsHelper {
         JWSObject jwsObject = new JWSObject(header, payload, signature);
         JWSVerifier verifier = new ECDSAVerifier(ecPublicKey);
 
+        System.out.println("h: " + header + " p: " + payload + " s: " + signature + " k: " + ecPublicKey);
+        System.out.println("verf: " + jwsObject.verify(verifier));
         return jwsObject.verify(verifier);
     }
 
