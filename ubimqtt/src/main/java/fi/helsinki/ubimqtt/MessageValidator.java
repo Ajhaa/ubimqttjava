@@ -22,9 +22,9 @@ public class MessageValidator {
     public boolean validateMessage(String message, ECPublicKey ecPublicKey) throws ParseException, JOSEException, java.text.ParseException, IOException {
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(message);
+        System.out.println("JSONOBJECT:" + obj);
 
         String payload = (String)obj.get("payload");
-
         JSONArray signaturesArray = (JSONArray)obj.get("signatures");
         JSONObject signatureObject = (JSONObject)signaturesArray.get(0);
         JSONObject headerObj = (JSONObject)signatureObject.get("protected");
@@ -32,15 +32,14 @@ public class MessageValidator {
         String signature = (String)signatureObject.get("signature");
 
         String compact = Base64URL.encode(headerObj.toString())+"."+Base64URL.encode(payload)+"."+signature;
-
+        System.out.println("COMPACT: " + compact);
         boolean isSignatureCorrect = JwsHelper.verifySignatureCompact(compact, ecPublicKey);
-
+        System.out.println("CORRECT? " + isSignatureCorrect);
         if (!isSignatureCorrect)
             return false;
 
         long timestamp = (Long)headerObj.get("timestamp");
         String messageId = (String)headerObj.get("messageid");
-
         return replayDetector.isValid(timestamp, messageId);
     }
 }
